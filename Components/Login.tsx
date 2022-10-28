@@ -1,8 +1,14 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
 import { useForm, Controller } from "react-hook-form";
+import UserService from '../Services/user';
+import LoginModal from './LoginModal';
 
 const Login = ({ changeType }: any) => {
+  const [showModal, setShowModal] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalText, setModalText] = useState('');
+
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       email: '',
@@ -10,11 +16,46 @@ const Login = ({ changeType }: any) => {
     }
   });
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: { email: string, password: string; }) => {
+
+    const { email, password } = data;
+    UserService.login(email, password)
+      .then((res) => {
+        console.log(res.data, 'DATA123');
+        if (res.data.error) {
+          setShowModal(true);
+          setModalVisible(true);
+          setModalText(res.data.error);
+        }
+
+        if (res.data.access_token) {
+          // res.data.refresh_token
+          setShowModal(true);
+          setModalVisible(true);
+          setModalText('Logged in!');
+        }
+      })
+      .catch((err) => {
+        console.log(err, 'err123');
+        setShowModal(true);
+        setModalVisible(true);
+        setModalText('Wrong login details!');
+      });
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+  console.log(isModalVisible, 'isModalVisible in Login');
 
   return (
     <View style={styles.container}>
+      <View style={{ height: 100 }}>
+
+        <LoginModal isModalVisible={isModalVisible} setModalVisible={setModalVisible} modalText={modalText} />
+      </View>
       <Text style={styles.title}>Money Management</Text>
+
 
       <View style={styles.buttonContainer}>
 
@@ -137,5 +178,12 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     top: '5%',
+  },
+  modal: {
+    height: 60,
+    borderWidth: 4,
+    borderColor: 'red',
+    width: 60,
+    backgroundColor: 'white'
   }
 });
