@@ -1,6 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, Pressable, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useForm, Controller } from "react-hook-form";
+import UserService from '../Services/user';
+const width = Dimensions.get('window').width; //full width
+const height = Dimensions.get('window').height; //full height
 
 const SignUp = ({ changeType }: any) => {
   const { control, handleSubmit, formState: { errors } } = useForm({
@@ -8,10 +11,29 @@ const SignUp = ({ changeType }: any) => {
       first_name: '',
       last_name: '',
       email: '',
-      password: ''
+      password: '',
+      mobile_number: '',
+      username: ''
     }
   });
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: any) => {
+    console.log(data);
+    const { email, first_name, last_name, password, mobile_number, username } = data;
+    UserService.signUp(first_name, last_name, email, password, mobile_number, username)
+      .then((res) => {
+        console.log(res, 'resss');
+        console.log(res.data, 'resssDATA');
+        if (res.data.error) {
+          // SWAL
+        }
+        if (res.data.email) {
+          // SWAL
+        }
+      })
+      .catch((err) => {
+        console.log(err, 'err123');
+      });
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Money Management</Text>
@@ -98,8 +120,42 @@ const SignUp = ({ changeType }: any) => {
           name="password"
         />
 
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.input}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              placeholder='mobile number'
+            />
+          )}
+          name="mobile_number"
+        />
+
+        <Controller
+          control={control}
+          rules={{
+            maxLength: 100,
+          }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              style={styles.input}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              placeholder='username'
+            />
+          )}
+          name="username"
+        />
+
         <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.text}>Sign up</Text>
+          <Text style={styles.signUpText} >Sign up</Text>
         </Pressable>
       </View>
     </View>
@@ -112,7 +168,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    top: '25%'
+    top: '15%',
+    // height: height * 2
   },
   title: {
     fontSize: 30,
@@ -138,7 +195,9 @@ const styles = StyleSheet.create({
 
     height: 60,
     width: 300,
-    marginTop: 20
+    marginTop: 20,
+    // marginBottom: 40,
+    // paddingBottom: 40
   },
   text: {
     fontSize: 16,
@@ -146,6 +205,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
+    // paddingBottom: 50
+  },
+  signUpText: {
+    fontSize: 16,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
+    // marginBottom: 50
+
   },
   buttonContainer: {
     display: 'flex',
