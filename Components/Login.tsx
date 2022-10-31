@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Button } from 'react-native';
 import { useForm, Controller } from "react-hook-form";
 import UserService from '../Services/user';
 import LoginModal from './LoginModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
 
-const Login = ({ changeType }: any) => {
+const Login = ({ changeType, navigation }: any) => {
+  console.log(navigation, 'navigation123');
   const [showModal, setShowModal] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState('');
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -17,6 +21,7 @@ const Login = ({ changeType }: any) => {
   });
 
   const onSubmit = (data: { email: string, password: string; }) => {
+    setShowLoadingSpinner(true);
 
     const { email, password } = data;
     UserService.login(email, password)
@@ -29,10 +34,22 @@ const Login = ({ changeType }: any) => {
         }
 
         if (res.data.access_token) {
-          // res.data.refresh_token
           setShowModal(true);
-          setModalVisible(true);
-          setModalText('Logged in!');
+
+          AsyncStorage.setItem('access_token', res.data.access_token).then((res) => {
+            console.log('saved access_token');
+          })
+            .catch((err) => {
+              console.log(err, 'err saving access_token');
+            });
+          AsyncStorage.setItem('refresh_token', res.data.refresh_token).then((res) => {
+            setShowLoadingSpinner(false);
+            navigation.navigate('PlaidLink', { name: 'Jane' });
+          })
+            .catch((err) => {
+              console.log(err, 'err saving refresh_token');
+            });
+
         }
       })
       .catch((err) => {
@@ -43,19 +60,21 @@ const Login = ({ changeType }: any) => {
       });
   };
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
   console.log(isModalVisible, 'isModalVisible in Login');
 
   return (
     <View style={styles.container}>
+      <Spinner
+        visible={showLoadingSpinner}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+        overlayColor={'rgba(00, 0, 0, 0.6)'}
+      />
       <View style={{ height: 100 }}>
 
         <LoginModal isModalVisible={isModalVisible} setModalVisible={setModalVisible} modalText={modalText} />
       </View>
       <Text style={styles.title}>Money Management</Text>
-
 
       <View style={styles.buttonContainer}>
 
@@ -68,9 +87,7 @@ const Login = ({ changeType }: any) => {
         </Pressable>
       </View>
 
-
       <View style={styles.formContainer}>
-
 
         <Controller
           control={control}
@@ -84,6 +101,7 @@ const Login = ({ changeType }: any) => {
               onChangeText={onChange}
               value={value}
               placeholder='email'
+              autoCapitalize='none'
             />
           )}
           name="email"
@@ -102,6 +120,7 @@ const Login = ({ changeType }: any) => {
               onChangeText={onChange}
               value={value}
               placeholder='password'
+              autoCapitalize='none'
             />
           )}
           name="password"
@@ -185,5 +204,8 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     width: 60,
     backgroundColor: 'white'
-  }
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
+  },
 });
