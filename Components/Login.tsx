@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Button, Alert } from 'react-native';
 import { useForm, Controller } from "react-hook-form";
 import UserService from '../Services/user';
 import LoginModal from './LoginModal';
@@ -28,9 +28,18 @@ const Login = ({ changeType, navigation }: any) => {
       .then((res) => {
         console.log(res.data, 'DATA123');
         if (res.data.error) {
-          setShowModal(true);
-          setModalVisible(true);
-          setModalText(res.data.error);
+          // setShowModal(true);
+          // setModalVisible(true);
+          // setModalText(res.data.error);
+          setShowLoadingSpinner(false);
+          Alert.alert('Error', res.data.error, [
+            // {
+            //   text: 'Cancel',
+            //   onPress: () => console.log('Cancel Pressed'),
+            //   style: 'cancel',
+            // },
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
         }
 
         if (res.data.access_token) {
@@ -57,6 +66,7 @@ const Login = ({ changeType, navigation }: any) => {
         setShowModal(true);
         setModalVisible(true);
         setModalText('Wrong login details!');
+        setShowLoadingSpinner(false);
       });
   };
 

@@ -1,27 +1,21 @@
 import { link } from 'fs';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Platform, View, Text, StyleSheet, ScrollView, Button, Pressable } from 'react-native';
+import { Platform, View, Text, StyleSheet, ScrollView, Button, Pressable, Alert } from 'react-native';
 import { PlaidLink, LinkExit, LinkSuccess } from 'react-native-plaid-link-sdk';
 import UserService from '../Services/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PlaidHome = ({ navigation }: any) => {
-  console.log(navigation, 'navigation111');
   const [linkToken, setLinkToken] = useState('');
   const [accessToken, setAccessToken] = useState<string | null>('');
   const address = Platform.OS === 'ios' ? 'localhost' : '10.0.2.2';
 
   const createLinkToken = useCallback(async () => {
     const token = await AsyncStorage.getItem('access_token');
-    console.log(token, 'tokentokentoken');
     setAccessToken(token);
-    console.log(token, 'tokentokentoken2');
     await UserService.getLinkToken(token)
       .then((data: any) => {
-        console.log(data.data, 'data111');
         setLinkToken(data.data.token);
-        console.log(data.data.token, '2o2');
-        console.log('ohaveset');
       })
       .catch((err) => {
         console.log(err, 'err23');
@@ -29,7 +23,6 @@ const PlaidHome = ({ navigation }: any) => {
   }, [setLinkToken]);
 
   useEffect(() => {
-    console.log(linkToken, 'linkToken123');
     if (!linkToken) {
       createLinkToken();
     }
@@ -42,7 +35,31 @@ const PlaidHome = ({ navigation }: any) => {
 
       UserService.exchangePublicTokenForAccesstoken(accessToken, success.publicToken)
         .then((res) => {
-          console.log(res, 'resExchange');
+          if (res.data.accessToken) {
+            AsyncStorage.setItem('encoded_plaid_access_token', res.data.accessToken).then((res) => {
+              console.log('saved plaid access token');
+              console.log('swal here');
+              Alert.alert('Success', 'Account linked', [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+              ]);
+            });
+          }
+          else {
+            console.log('swal here');
+            Alert.alert('Error', 'Unable to link bank account', [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel',
+              },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+          }
         })
         .catch((err) => {
           console.log(err, 'err123');
@@ -54,28 +71,22 @@ const PlaidHome = ({ navigation }: any) => {
     <View style={{ flex: 1 }}>
 
       <View style={styles.bottom}>
-        {/* <TestPlaid /> */}
-        <ScrollView style={{ borderColor: 'red', borderWidth: 2, height: 100, zIndex: 100000 }}>
+        <ScrollView style={{ height: 100, zIndex: 100000 }}>
 
           <PlaidLink
             tokenConfig={{ token: linkToken, noLoadingState: false }}
-            // onSuccess={(success: LinkSuccess) => console.log(success, 'sucesss123')}
             onSuccess={(success: LinkSuccess) => handleSuccess(success)}
             onExit={(exit: LinkExit) => console.log(exit, 'exist123')}
           >
             {/* <Text>Add Account</Text> */}
             {/* <Pressable style={styles.button} > */}
+            {/* <Text style={styles.buttonText}>Connect a bank account</Text> */}
             <Text style={styles.buttonText}>Connect a bank account</Text>
             {/* </Pressable> */}
           </PlaidLink>
 
         </ScrollView>
-        <Button
-          title="Back to PlaidLink"
-          onPress={() =>
-            navigation.navigate('PlaidLink', { name: 'Jane' })
-          }
-        />
+
 
       </View>
     </View>
@@ -128,18 +139,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   buttonText: {
-    // fontSize: 20,
-    // color: '#FFF',
-    // backgroundColor: '#000',
-    // fontWeight: 'bold',
-    // alignSelf: 'center',
-    // textTransform: 'uppercase',
-    fontSize: 16,
-    lineHeight: 21,
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
-    // color: 'white',
-    color: 'black',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 17,
+    paddingHorizontal: 32,
+    elevation: 3,
+    backgroundColor: '#FC0086',
+    fontSize: 19,
+    height: 60,
+    width: 270,
+    marginTop: 50,
+    color: 'white',
+    display: 'flex'
   },
   button: {
     alignItems: 'center',
