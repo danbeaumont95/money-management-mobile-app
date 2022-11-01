@@ -399,6 +399,7 @@ PODS:
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
+  - RNSweetAlert (3.1.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -455,6 +456,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSweetAlert (from `../node_modules/react-native-sweet-alert`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -567,6 +569,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSweetAlert:
+    :path: "../node_modules/react-native-sweet-alert"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -625,6 +629,7 @@ SPEC CHECKSUMS:
   ReactCommon: fe7580b9d10f00249facf25659e0ec051320cc8a
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
+  RNSweetAlert: 1aa4e70d8f8540aa6b9c18c019f62a25e36720b6
   Yoga: 75bf4b0131cfb46a659cd0c13309b79a6fcff66d
 
 PODFILE CHECKSUM: cc5494958c95beaab4925382489724c94f15b021
