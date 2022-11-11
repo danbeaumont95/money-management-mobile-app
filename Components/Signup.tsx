@@ -17,12 +17,11 @@ const SignUp = ({ changeType }: any) => {
     }
   });
   const onSubmit = (data: any) => {
-    console.log(data);
+
     const { email, first_name, last_name, password, mobile_number, username } = data;
     UserService.signUp(first_name, last_name, email, password, mobile_number, username)
       .then((res) => {
-        console.log(res, 'resss');
-        console.log(res.data, 'resssDATA');
+
         if (res.data.error) {
           // SWAL
         }
@@ -169,7 +168,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     top: '15%',
-    // height: height * 2
   },
   title: {
     fontSize: 30,
@@ -192,12 +190,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     backgroundColor: '#FC0086',
-
     height: 60,
     width: 300,
     marginTop: 20,
-    // marginBottom: 40,
-    // paddingBottom: 40
   },
   text: {
     fontSize: 16,
@@ -205,7 +200,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
-    // paddingBottom: 50
   },
   signUpText: {
     fontSize: 16,
@@ -213,7 +207,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
-    // marginBottom: 50
 
   },
   buttonContainer: {
