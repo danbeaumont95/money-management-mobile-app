@@ -41,8 +41,6 @@ const getLinkToken = async (token: string | null) => {
 };
 
 const exchangePublicTokenForAccesstoken = async (token: string | null, publicToken: string) => {
-
-  // const refreshToken: any = localStorage.getItem('refreshToken');
   const refreshToken = await AsyncStorage.getItem('refresh_token');
   const checkIfTokenValid = await TokenService.refreshToken(token, refreshToken);
   if (checkIfTokenValid.data?.access_token) {
@@ -60,7 +58,7 @@ const exchangePublicTokenForAccesstoken = async (token: string | null, publicTok
 };
 
 const getAllTransactions = async (token: string | null, time: string) => {
-  const refreshToken: any = localStorage.getItem('refreshToken');
+  const refreshToken = await AsyncStorage.getItem('refresh_token');
 
   const checkIfTokenValid = await TokenService.refreshToken(token, refreshToken);
   if (checkIfTokenValid.data?.access_token) {

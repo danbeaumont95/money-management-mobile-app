@@ -1,7 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image, ScrollView, Dimensions, Button } from 'react-native';
-// import PlaidImage from '../assets/PlaidLink.png';
-// import Resize from '../assets/resize.png';
 import PlaidHome from './PlaidHome';
 
 const height = Dimensions.get('window').height;
@@ -11,11 +9,16 @@ const PlaidLink = ({ navigation }: any) => {
     <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
       <View style={{ top: 50 }}>
 
-
         <Button
           title="Back to login"
           onPress={() =>
             navigation.navigate('Home', { name: 'Jane' })
+          }
+        />
+        <Button
+          title="Back to main"
+          onPress={() =>
+            navigation.navigate('Main', { name: 'Jane' })
           }
         />
       </View>
@@ -28,9 +31,6 @@ const PlaidLink = ({ navigation }: any) => {
           <Image source={require('../assets/PlaidLink.png')} />
         </ScrollView>
 
-        {/* <Pressable style={styles.button} >
-          <Text style={styles.buttonText}>Connect a bank account</Text>
-        </Pressable> */}
         <PlaidHome navigation={navigation} />
       </View>
     </ScrollView>

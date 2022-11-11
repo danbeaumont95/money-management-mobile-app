@@ -5,13 +5,14 @@ import UserService from '../Services/user';
 import LoginModal from './LoginModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+// import {  } from 'react-native-'
+import Ionicons from '@expo/vector-icons/Ionicons';
 const Login = ({ changeType, navigation }: any) => {
-  console.log(navigation, 'navigation123');
   const [showModal, setShowModal] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState('');
   const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
+  const [hidePassword, setHidePassword] = useState(true);
 
   const { control, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -26,18 +27,9 @@ const Login = ({ changeType, navigation }: any) => {
     const { email, password } = data;
     UserService.login(email, password)
       .then((res) => {
-        console.log(res.data, 'DATA123');
         if (res.data.error) {
-          // setShowModal(true);
-          // setModalVisible(true);
-          // setModalText(res.data.error);
           setShowLoadingSpinner(false);
           Alert.alert('Error', res.data.error, [
-            // {
-            //   text: 'Cancel',
-            //   onPress: () => console.log('Cancel Pressed'),
-            //   style: 'cancel',
-            // },
             { text: 'OK', onPress: () => console.log('OK Pressed') },
           ]);
         }
@@ -46,7 +38,6 @@ const Login = ({ changeType, navigation }: any) => {
           setShowModal(true);
 
           AsyncStorage.setItem('access_token', res.data.access_token).then((res) => {
-            console.log('saved access_token');
           })
             .catch((err) => {
               console.log(err, 'err saving access_token');
@@ -70,7 +61,9 @@ const Login = ({ changeType, navigation }: any) => {
       });
   };
 
-  console.log(isModalVisible, 'isModalVisible in Login');
+  const handlePress = () => {
+    setHidePassword(!hidePassword);
+  };
 
   return (
     <View style={styles.container}>
@@ -117,24 +110,34 @@ const Login = ({ changeType, navigation }: any) => {
           name="email"
         />
         {errors.email && <Text>This is required.</Text>}
+        <View style={{ flexDirection: 'row' }}>
 
-        <Controller
-          control={control}
-          rules={{
-            maxLength: 100,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              placeholder='password'
-              autoCapitalize='none'
-            />
-          )}
-          name="password"
-        />
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.passwordInput}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                placeholder='password'
+                autoCapitalize='none'
+                secureTextEntry={hidePassword}
+              />
+            )}
+            name="password"
+          />
+
+          {hidePassword ? (
+            <Ionicons name="eye" size={32} style={{ top: 34, right: 45 }} onPress={handlePress} />
+          ) :
+            <Ionicons name="eye-off" size={32} style={{ top: 34, right: 45 }} onPress={handlePress} />
+          }
+
+        </View>
 
         <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.text}>Login</Text>
@@ -164,6 +167,23 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     fontSize: 20,
     paddingLeft: 10
+  },
+  passwordInput: {
+    marginTop: 20,
+    height: 60,
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 6,
+    fontSize: 20,
+    paddingLeft: 10,
+    // borderColor: 'red',
+    // borderWidth: 4,
+    margin: 'auto',
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    marginLeft: 33
   },
   button: {
     alignItems: 'center',
@@ -207,6 +227,11 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     top: '5%',
+    // borderColor: 'blue',
+    // borderWidth: 5,
+    margin: 'auto',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modal: {
     height: 60,

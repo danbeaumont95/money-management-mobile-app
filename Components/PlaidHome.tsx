@@ -28,7 +28,6 @@ const PlaidHome = ({ navigation }: any) => {
     }
   }, [linkToken]);
 
-  console.log(linkToken, 'linkToken123');
 
   const handleSuccess = (success: LinkSuccess) => {
     if (success.publicToken) {
@@ -37,8 +36,7 @@ const PlaidHome = ({ navigation }: any) => {
         .then((res) => {
           if (res.data.accessToken) {
             AsyncStorage.setItem('encoded_plaid_access_token', res.data.accessToken).then((res) => {
-              console.log('saved plaid access token');
-              console.log('swal here');
+
               Alert.alert('Success', 'Account linked', [
                 {
                   text: 'Cancel',
@@ -50,7 +48,6 @@ const PlaidHome = ({ navigation }: any) => {
             });
           }
           else {
-            console.log('swal here');
             Alert.alert('Error', 'Unable to link bank account', [
               {
                 text: 'Cancel',
@@ -78,11 +75,7 @@ const PlaidHome = ({ navigation }: any) => {
             onSuccess={(success: LinkSuccess) => handleSuccess(success)}
             onExit={(exit: LinkExit) => console.log(exit, 'exist123')}
           >
-            {/* <Text>Add Account</Text> */}
-            {/* <Pressable style={styles.button} > */}
-            {/* <Text style={styles.buttonText}>Connect a bank account</Text> */}
             <Text style={styles.buttonText}>Connect a bank account</Text>
-            {/* </Pressable> */}
           </PlaidLink>
 
         </ScrollView>
@@ -149,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     height: 60,
     width: 270,
-    marginTop: 50,
+    marginTop: 40,
     color: 'white',
     display: 'flex'
   },

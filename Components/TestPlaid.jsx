@@ -4,16 +4,15 @@ import queryString from "query-string";
 import { LinkErrorCode, LinkErrorType, LinkExitMetadataStatus } from './const';
 
 export default function TestPlaid({ linkToken, onEvent, onExit, onSuccess }) {
-  console.log(linkToken, 'linkToken111');
+
   let webviewRef = useRef();
 
   const handleNavigationStateChange = (event) => {
-    console.log(event, 'eventInTest');
-    console.log(event.url, 'eventURL123t');
+
     if (event.url.startsWith("plaidlink://")) {
-      console.log('iamhere');
+
       const eventParams = queryString.parse(event.url.replace(/.*\?/, ""));
-      console.log(eventParams, 'eventParams123');
+
       const linkSessionId = eventParams.link_session_id;
       const mfaType = eventParams.mfa_type;
       const requestId = eventParams.request_id;
@@ -77,10 +76,10 @@ export default function TestPlaid({ linkToken, onEvent, onExit, onSuccess }) {
           },
         });
       }
-      console.log('falsing');
+
       return false;
     }
-    console.log('truing');
+
     return true;
   };
 
