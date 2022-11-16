@@ -4,10 +4,8 @@ import { TransactionInterface } from '../Services/interfaces';
 import { FontAwesome } from '@expo/vector-icons';
 import categories from '../Services/plaid_categories';
 import getSymbolFromCurrency from 'currency-symbol-map';
-import MyTabs from './Tabs';
 
-const Transaction = ({ transaction }: { [key: string]: TransactionInterface; }) => {
-
+const Transaction = ({ transaction, show, hide }: { [key: string]: TransactionInterface; }) => {
   const upperCaseFirstLetter = string =>
     `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -20,7 +18,7 @@ const Transaction = ({ transaction }: { [key: string]: TransactionInterface; }) 
     <View style={styles.container}>
       <View style={styles.left}>
         <View style={{
-          backgroundColor: '#BF7DD3', shadowRadius: 8, borderRadius: 10, justifyContent: 'center',
+          backgroundColor: '#FC0086', shadowRadius: 8, borderRadius: 10, justifyContent: 'center',
           alignContent: 'center',
           alignItems: 'center',
           height: '50%',
@@ -50,48 +48,30 @@ export default Transaction;
 const styles = StyleSheet.create({
   container: {
     color: '#FFF',
-    // backgroundColor: 'red',
     height: 100,
     borderBottomColor: 'grey',
-    // borderTopColor: 'red',
     borderWidth: 2,
-    // paddingBottom: 10,
     marginBottom: 10,
     width: Dimensions.get("window").width,
     display: 'flex',
     flexDirection: 'row',
     flexGrow: 4,
-    // alignItems: 'stretch',
-    // justifyContent: 'space-around',
-    // backgroundColor: '#'
   },
   left: {
-    // borderColor: 'black',
-    // borderWidth: 2,
-    // flexGrow: 1,
-    // flexShrink: 1,
     flexBasis: '15%',
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center'
   },
   center: {
-    // borderColor: 'yellow',
-    // borderWidth: 2,
-    // flexGrow: 2,
-    // textAlign: 'center',
     flexBasis: '65%',
     justifyContent: 'center',
     alignContent: 'center',
-    // alignItems: 'left',
     textAlign: 'center',
     paddingRight: 14,
     paddingLeft: 10
   },
   right: {
-    // borderColor: 'green',
-    // borderWidth: 2,
-    // flexGrow: 1,
     flexBasis: '20%',
     justifyContent: 'center',
     alignContent: 'center',

@@ -1,11 +1,15 @@
-import { View, Text, Alert, StyleSheet, ScrollView } from "react-native";
-import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, Alert, StyleSheet, ScrollView, Button } from "react-native";
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import UserService from "../Services/user";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Chart from "./Chart";
 import Transaction from "./Transaction";
 import { TransactionInterface, IArrayOfStrings, PaymentMeta } from '../Services/interfaces';
+import TransactionFilters from "./TransactionFilters";
+import SwipeUpDown from 'react-native-swipe-up-down';
+import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BackgroundComponent from "./BackgroundComponent";
 
 const Main = ({ navigation }) => {
   const [showLoadingSpinner, setShowLoadingSpinner] = useState(true);
@@ -88,29 +92,67 @@ const Main = ({ navigation }) => {
     return { barChartData: Object.values(obj), pieChartData };
   };
 
+  const sheetRef = useRef<BottomSheet>(null);
+
+  // const snapPoints = useMemo(() => ["100%", "150%", "200%"], []);
+  const snapPoints = useMemo(() => ["25%", "50%", "100%"], []);
+
+  const handleSheetChange = useCallback((index) => {
+    console.log("handleSheetChange", index);
+  }, []);
+  const handleSnapPress = useCallback((index) => {
+    sheetRef.current?.snapToIndex(index);
+  }, []);
+  const handleClosePress = useCallback(() => {
+    sheetRef.current?.close();
+  }, []);
+
+
   if (!transactions.length) return <View><Text>Loading...</Text></View>;
   return (
     <View style={{ display: 'flex', backgroundColor: '#1A1C46' }}>
-      <Spinner
-        visible={showLoadingSpinner}
-        textContent={'Loading...'}
-        textStyle={styles.spinnerTextStyle}
-        overlayColor={'rgba(00, 0, 0, 0.6)'}
-      />
-      <Text style={{ color: '#CBD3F7', fontSize: 30, top: 50, margin: 'auto', textAlign: 'center' }}>Transactions</Text>
-      <View style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: 'auto', height: 340, marginBottom: 0, paddingBottom: 0 }}>
-        <View style={{ display: 'flex', marginBottom: 0, paddingBottom: 0, top: 20 }}>
+      <View style={{ zIndex: 1 }}>
 
-          <Chart data={getAmountSpentPerAmount(transactions)} labels={['Less than £5', '£5-£10', '£10-£20', '£20-£30', '£30+']} type='pie' />
-        </View>
-      </View>
-      <ScrollView style={{ marginTop: -50 }}>
+        <Spinner
+          visible={showLoadingSpinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+          overlayColor={'rgba(00, 0, 0, 0.6)'}
+        />
+        <Text style={{ color: '#CBD3F7', fontSize: 30, top: 50, margin: 'auto', textAlign: 'center' }}>Transactions</Text>
+        <View style={{ width: '100%', display: 'flex', justifyContent: 'center', margin: 'auto', height: 340, marginBottom: 0, paddingBottom: 0 }}>
+          <View style={{ display: 'flex', marginBottom: 0, paddingBottom: 0, top: 20 }}>
 
-        {transactions.map((el) => (
-          <View style={{ marginTop: 0 }}>
-            <Transaction transaction={el} />
+            <Chart data={getAmountSpentPerAmount(transactions)} labels={['Less than £5', '£5-£10', '£10-£20', '£20-£30', '£30+']} type='pie' />
           </View>
-        ))}
+        </View>
+        <TransactionFilters />
+      </View>
+      <ScrollView style={{ marginTop: 20 }}>
+
+        <View style={styles.container}>
+          <Button title="Snap To 90%" onPress={() => handleSnapPress(2)} />
+          <Button title="Snap To 50%" onPress={() => handleSnapPress(1)} />
+          <Button title="Snap To 25%" onPress={() => handleSnapPress(0)} />
+          <Button title="Close" onPress={() => handleClosePress()} />
+          <View></View>
+          <BottomSheet
+            ref={sheetRef}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChange}
+            backgroundComponent={BackgroundComponent}
+          >
+            <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+
+              {transactions.map((el) => (
+                <Transaction transaction={el} />
+              ))}
+
+            </BottomSheetScrollView>
+          </BottomSheet>
+        </View>
+
       </ScrollView>
     </View>
   );
@@ -121,5 +163,21 @@ export default Main;
 const styles = StyleSheet.create({
   spinnerTextStyle: {
     color: '#FFF'
+  },
+  container: {
+    flex: 1,
+    paddingTop: 300,
+    zIndex: 1000000,
+    backgroundColor: "#1A1C46",
+    paddingBottom: 0,
+    marginBottom: 0
+  },
+  contentContainer: {
+    backgroundColor: "#1A1C46",
+  },
+  itemContainer: {
+    padding: 6,
+    margin: 6,
+    backgroundColor: "#1A1C46",
   },
 });
