@@ -5,8 +5,8 @@ import UserService from '../Services/user';
 import LoginModal from './LoginModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
-// import {  } from 'react-native-'
 import Ionicons from '@expo/vector-icons/Ionicons';
+
 const Login = ({ changeType, navigation }: any) => {
   const [showModal, setShowModal] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -54,10 +54,11 @@ const Login = ({ changeType, navigation }: any) => {
       })
       .catch((err) => {
         console.log(err, 'err123');
-        setShowModal(true);
-        setModalVisible(true);
-        setModalText('Wrong login details!');
+        Alert.alert('Error', 'Wrong login details', [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
         setShowLoadingSpinner(false);
+
       });
   };
 
