@@ -14,6 +14,8 @@ import BackgroundComponent from "./BackgroundComponent";
 const Main = ({ navigation }) => {
   const [showLoadingSpinner, setShowLoadingSpinner] = useState(true);
   const [transactions, setTransactions] = useState<Array<TransactionInterface>>([]);
+  const [snapScore, setSnapScope] = useState(1);
+  const [scrollingDraw, setScrollingDraw] = useState(false);
 
   const getTransactions = useCallback(async () => {
     const token = await AsyncStorage.getItem('access_token');
@@ -95,10 +97,12 @@ const Main = ({ navigation }) => {
   const sheetRef = useRef<BottomSheet>(null);
 
   // const snapPoints = useMemo(() => ["100%", "150%", "200%"], []);
-  const snapPoints = useMemo(() => ["25%", "50%", "100%"], []);
+  const snapPoints = useMemo(() => ["25%", "50%", "150%"], []);
 
   const handleSheetChange = useCallback((index) => {
     console.log("handleSheetChange", index);
+    setSnapScope(index);
+    setScrollingDraw(false);
   }, []);
   const handleSnapPress = useCallback((index) => {
     sheetRef.current?.snapToIndex(index);
@@ -107,11 +111,25 @@ const Main = ({ navigation }) => {
     sheetRef.current?.close();
   }, []);
 
+  const handleBottomScrollViewScroll = () => {
+    console.log(handleBottomScrollViewScroll, 'handleBottomScrollViewScroll');
+  };
+
+  const handleBottomScrollViewScrollEndDrag = () => {
+    console.log(handleBottomScrollViewScrollEndDrag, 'handleBottomScrollViewScrollEndDrag');
+  };
+
+  const bottom = () => {
+    console.log('bottom');
+    setScrollingDraw(true);
+  };
 
   if (!transactions.length) return <View><Text>Loading...</Text></View>;
+  console.log(snapPoints, 'snapPoints12');
+  console.log(scrollingDraw, 'scrollingDraw123');
   return (
     <View style={{ display: 'flex', backgroundColor: '#1A1C46' }}>
-      <View style={{ zIndex: 1 }}>
+      <View style={scrollingDraw ? { display: 'none' } : { zIndex: 1, elevation: 1, position: 'absolute' }}>
 
         <Spinner
           visible={showLoadingSpinner}
@@ -128,14 +146,14 @@ const Main = ({ navigation }) => {
         </View>
         <TransactionFilters />
       </View>
-      <ScrollView style={{ marginTop: 20 }}>
+      <ScrollView style={snapScore === 2 ? { zIndex: 9999 } : { marginTop: 20, position: 'relative', }} onScroll={handleBottomScrollViewScroll} onScrollEndDrag={handleBottomScrollViewScrollEndDrag}>
 
         <View style={styles.container}>
-          <Button title="Snap To 90%" onPress={() => handleSnapPress(2)} />
-          <Button title="Snap To 50%" onPress={() => handleSnapPress(1)} />
-          <Button title="Snap To 25%" onPress={() => handleSnapPress(0)} />
-          <Button title="Close" onPress={() => handleClosePress()} />
-          <View></View>
+          {/* <Button title="Snap To 90%" onPress={() => handleSnapPress(2)} /> */}
+          {/* <Button title="Snap To 50%" onPress={() => handleSnapPress(1)} /> */}
+          {/* <Button title="Snap To 25%" onPress={() => handleSnapPress(0)} /> */}
+          {/* <Button title="Close" onPress={() => handleClosePress()} /> */}
+          {/* <View></View> */}
           <BottomSheet
             ref={sheetRef}
             index={1}
@@ -143,7 +161,7 @@ const Main = ({ navigation }) => {
             onChange={handleSheetChange}
             backgroundComponent={BackgroundComponent}
           >
-            <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+            <BottomSheetScrollView contentContainerStyle={styles.contentContainer} onScroll={bottom}>
 
               {transactions.map((el) => (
                 <Transaction transaction={el} />
@@ -154,7 +172,7 @@ const Main = ({ navigation }) => {
         </View>
 
       </ScrollView>
-    </View>
+    </View >
   );
 };
 
@@ -167,13 +185,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 300,
-    zIndex: 1000000,
+    position: 'relative',
+    zIndex: 9999,
+    elevation: 9999,
     backgroundColor: "#1A1C46",
     paddingBottom: 0,
-    marginBottom: 0
+    marginBottom: 0,
+
+    height: 1000,
+
+    backfaceVisibility: 'hidden'
   },
   contentContainer: {
     backgroundColor: "#1A1C46",
+
+    position: 'absolute',
+    zIndex: 9999,
+    elevation: 9999,
   },
   itemContainer: {
     padding: 6,
