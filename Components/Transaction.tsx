@@ -36,7 +36,7 @@ const Transaction = ({ transaction, show, hide }: { [key: string]: TransactionIn
       </View>
       <View style={styles.right}>
 
-        <Text style={{ fontSize: 20, color: '#CBD3F7' }}>{getSymbolFromCurrency(transaction.iso_currency_code)}{transaction.amount.toString().indexOf('.') > 0 ? transaction.amount.toFixed(2) : transaction.amount}</Text>
+        <Text style={{ fontSize: 20, color: '#CBD3F7', position: 'absolute', zIndex: 9999, elevation: 10000 }}>{getSymbolFromCurrency(transaction.iso_currency_code)}{transaction.amount.toString().indexOf('.') > 0 ? transaction.amount.toFixed(2) : transaction.amount}</Text>
       </View>
     </View>
   );
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexGrow: 4,
+    // zIndex: -1
   },
   left: {
     flexBasis: '15%',

@@ -36,25 +36,31 @@ export default TransactionFilters;
 
 const styles = StyleSheet.create({
   container: {
-    // borderColor: 'blue',
-    // borderWidth: 2,
-    marginTop: -50
+    marginTop: -50,
+    position: 'relative',
+    zIndex: -2
   },
   timePeriodContainer: {
     display: 'flex',
     flexDirection: 'row',
     // justifyContent: 'center'
     justifyContent: 'space-around',
+    position: 'relative',
+    zIndex: 1,
+    elevation: 1,
+
   },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
-    elevation: 3,
+    elevation: 1,
     backgroundColor: '#FC0086',
     height: 50,
     marginTop: 20,
     flexBasis: '25%',
+    position: 'relative',
+    zIndex: 1,
   },
   text: {
     fontSize: 16,
