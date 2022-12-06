@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
-import { TransactionInterface } from '../Services/interfaces';
+import { FormattedDate, TransactionInterface } from '../Services/interfaces';
 import { FontAwesome } from '@expo/vector-icons';
 import categories from '../Services/plaid_categories';
 import getSymbolFromCurrency from 'currency-symbol-map';
 
+// const Transaction = ({ transaction, show, hide }: { [key: string]: TransactionInterface; }) => {
 const Transaction = ({ transaction, show, hide }: { [key: string]: TransactionInterface; }) => {
+
   const upperCaseFirstLetter = string =>
     `${string.slice(0, 1).toUpperCase()}${string.slice(1)}`;
 
@@ -15,6 +17,8 @@ const Transaction = ({ transaction, show, hide }: { [key: string]: TransactionIn
     );
 
   return (
+    // <View>
+    // </View>
     <View style={styles.container}>
       <View style={styles.left}>
         <View style={{
