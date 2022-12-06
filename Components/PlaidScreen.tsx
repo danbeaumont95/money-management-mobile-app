@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable, Image, ScrollView, Dimensions, Button } from 'react-native';
 import PlaidHome from './PlaidHome';
+import MyTabs from './Tabs';
+import { NavigationContainer } from '@react-navigation/native';
 
 const height = Dimensions.get('window').height;
 
@@ -33,6 +35,9 @@ const PlaidLink = ({ navigation }: any) => {
 
         <PlaidHome navigation={navigation} />
       </View>
+      {/* <NavigationContainer independent={true}>
+        <MyTabs />
+      </NavigationContainer> */}
     </ScrollView>
   );
 };

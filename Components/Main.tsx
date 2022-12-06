@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Chart from "./Chart";
 import Transaction from "./Transaction";
-import { TransactionInterface, IArrayOfStrings, PaymentMeta } from '../Services/interfaces';
+import { TransactionInterface, IArrayOfStrings, PaymentMeta, FormattedDate } from '../Services/interfaces';
 import TransactionFilters from "./TransactionFilters";
 import SwipeUpDown from 'react-native-swipe-up-down';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -16,6 +16,11 @@ const Main = ({ navigation }) => {
   const [transactions, setTransactions] = useState<Array<TransactionInterface>>([]);
   const [snapScore, setSnapScope] = useState(1);
   const [scrollingDraw, setScrollingDraw] = useState(false);
+  const [inboundOutbound, setInboundOutbound] = useState('all');
+  const [formattedDates, setFormattedDates] = useState([]);
+  const [buttonChangeLoading, setButtonChangeLoading] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
+  const [date, setDate] = useState('week');
 
   const getTransactions = useCallback(async () => {
     const token = await AsyncStorage.getItem('access_token');
@@ -34,6 +39,7 @@ const Main = ({ navigation }) => {
           if (res.data.transactions) {
             setShowLoadingSpinner(false);
             setTransactions(res.data.transactions);
+            setFormattedDates(formatTransactionsByDate(res.data.transactions));
           }
         }
       })
@@ -42,9 +48,17 @@ const Main = ({ navigation }) => {
         setShowLoadingSpinner(false);
       });
   }, []);
+
+  const getAccessToken = async () => {
+    const token = await AsyncStorage.getItem('access_token');
+    if (token) {
+      setAccessToken(token);
+    }
+  };
   useEffect(() => {
     setShowLoadingSpinner(true);
     getTransactions();
+    getAccessToken();
   }, []);
 
   const getAmountSpentPerAmount = (arr: Array<TransactionInterface>) => {
@@ -96,7 +110,6 @@ const Main = ({ navigation }) => {
 
   const sheetRef = useRef<BottomSheet>(null);
 
-  // const snapPoints = useMemo(() => ["100%", "150%", "200%"], []);
   const snapPoints = useMemo(() => ["25%", "50%", "150%"], []);
 
   const handleSheetChange = useCallback((index) => {
@@ -112,21 +125,185 @@ const Main = ({ navigation }) => {
   }, []);
 
   const handleBottomScrollViewScroll = () => {
-    console.log(handleBottomScrollViewScroll, 'handleBottomScrollViewScroll');
   };
 
   const handleBottomScrollViewScrollEndDrag = () => {
-    console.log(handleBottomScrollViewScrollEndDrag, 'handleBottomScrollViewScrollEndDrag');
   };
 
   const bottom = () => {
-    console.log('bottom');
     setScrollingDraw(true);
   };
 
+  const formatTransactionsByDate = (arr: Array<TransactionInterface>) => {
+    const result = arr.reduce(
+      (
+        transaction: any,
+        {
+          date,
+          pending,
+          account_id,
+          amount,
+          category,
+          name,
+          merchant_name,
+          transaction_code,
+          transaction_type,
+          payment_channel,
+          iso_currency_code,
+          category_id
+        }: {
+          date: string;
+          pending: boolean,
+          account_id: string,
+          amount: number,
+          category: IArrayOfStrings,
+          name: string,
+          merchant_name: string,
+          transaction_code: string,
+          transaction_type: string,
+          payment_channel: string,
+          iso_currency_code: string;
+          category_id: string;
+        },
+      ) => {
+        let match = transaction.find((e: any) => e.date === date);
+        if (match) {
+          match.data.push({
+            pending,
+            account_id,
+            amount,
+            category,
+            name,
+            merchant_name,
+            transaction_code,
+            transaction_type,
+            payment_channel,
+            iso_currency_code,
+            category_id
+          });
+        } else {
+          match = {
+            date,
+            data: [
+              {
+                pending,
+                account_id,
+                amount,
+                category,
+                name,
+                merchant_name,
+                transaction_code,
+                transaction_type,
+                payment_channel,
+                iso_currency_code,
+                category_id
+              },
+            ],
+          };
+          transaction.push(match);
+        }
+        return transaction;
+      },
+      [],
+    );
+    return result;
+  };
+
+  const onInboundClick = () => {
+
+    const mappedTransactions = transactions.filter((el) => el.amount < 0);
+
+    setFormattedDates(formatTransactionsByDate(mappedTransactions));
+
+    setInboundOutbound('inbound');
+  };
+
+  const onAllClick = () => {
+
+    setFormattedDates(formatTransactionsByDate(transactions));
+
+    setInboundOutbound('all');
+  };
+
+  const onOutboundClick = () => {
+
+    const mappedTransactions = transactions.filter((el) => el.amount > 0);
+
+    setFormattedDates(formatTransactionsByDate(mappedTransactions));
+
+    setInboundOutbound('outbound');
+  };
+
+  const onDayClick = () => {
+
+    setButtonChangeLoading(true);
+    setShowLoadingSpinner(true);
+
+    UserService.getAllTransactions(accessToken, 'day')
+      // eslint-disable-next-line consistent-return
+      .then((res) => {
+        if (res.data.transactions) {
+          setTransactions(res.data.transactions);
+          setFormattedDates(formatTransactionsByDate(res.data.transactions));
+          setDate('day');
+          setShowLoadingSpinner(false);
+          setButtonChangeLoading(false);
+          setShowLoadingSpinner(false);
+
+        } else {
+
+          Alert.alert('Error', res.data.error, [
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        }
+      });
+  };
+
+  const onWeekClick = () => {
+    setShowLoadingSpinner(true);
+    setButtonChangeLoading(true);
+    UserService.getAllTransactions(accessToken, 'week')
+      // eslint-disable-next-line consistent-return
+      .then((res) => {
+        if (res.data.transactions) {
+          setTransactions(res.data.transactions);
+          setFormattedDates(formatTransactionsByDate(res.data.transactions));
+          setDate('week');
+          setButtonChangeLoading(false);
+          setShowLoadingSpinner(false);
+
+        } else {
+
+          Alert.alert('Error', res.data.error, [
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        }
+      });
+  };
+
+  const onMonthClick = () => {
+    setShowLoadingSpinner(true);
+    setButtonChangeLoading(true);
+    UserService.getAllTransactions(accessToken, 'month')
+      // eslint-disable-next-line consistent-return
+      .then((res) => {
+        if (res.data.transactions) {
+          setTransactions(res.data.transactions);
+          setFormattedDates(formatTransactionsByDate(res.data.transactions));
+          setDate('month');
+          setButtonChangeLoading(false);
+          setShowLoadingSpinner(false);
+
+        } else {
+          Alert.alert('Error', res.data.error, [
+            { text: 'OK', onPress: () => console.log('OK Pressed') },
+          ]);
+        }
+      });
+  };
+
   if (!transactions.length) return <View><Text>Loading...</Text></View>;
-  console.log(snapPoints, 'snapPoints12');
-  console.log(scrollingDraw, 'scrollingDraw123');
+
   return (
     <View style={{ display: 'flex', backgroundColor: '#1A1C46' }}>
       <View style={scrollingDraw ? { display: 'none' } : { zIndex: 1, elevation: 1, position: 'absolute' }}>
@@ -144,16 +321,12 @@ const Main = ({ navigation }) => {
             <Chart data={getAmountSpentPerAmount(transactions)} labels={['Less than £5', '£5-£10', '£10-£20', '£20-£30', '£30+']} type='pie' />
           </View>
         </View>
-        <TransactionFilters />
+        <TransactionFilters onDayClick={onDayClick} onWeekClick={onWeekClick} onMonthClick={onMonthClick} onInboundClick={onInboundClick} onAllClick={onAllClick} onOutboundClick={onOutboundClick} date={date} inboundOutbound={inboundOutbound} />
       </View>
       <ScrollView style={snapScore === 2 ? { zIndex: 9999 } : { marginTop: 20, position: 'relative', }} onScroll={handleBottomScrollViewScroll} onScrollEndDrag={handleBottomScrollViewScrollEndDrag}>
 
         <View style={styles.container}>
-          {/* <Button title="Snap To 90%" onPress={() => handleSnapPress(2)} /> */}
-          {/* <Button title="Snap To 50%" onPress={() => handleSnapPress(1)} /> */}
-          {/* <Button title="Snap To 25%" onPress={() => handleSnapPress(0)} /> */}
-          {/* <Button title="Close" onPress={() => handleClosePress()} /> */}
-          {/* <View></View> */}
+
           <BottomSheet
             ref={sheetRef}
             index={1}
@@ -163,8 +336,11 @@ const Main = ({ navigation }) => {
           >
             <BottomSheetScrollView contentContainerStyle={styles.contentContainer} onScroll={bottom}>
 
-              {transactions.map((el) => (
-                <Transaction transaction={el} />
+              {formattedDates.map((el: any) => (
+                el.data.map((els) => (
+
+                  <Transaction transaction={els} />
+                ))
               ))}
 
             </BottomSheetScrollView>

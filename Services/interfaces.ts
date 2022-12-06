@@ -36,3 +36,23 @@ export interface TransactionInterface {
   transaction_type: string;
   unofficial_currency_code: any;
 }
+
+export interface FormattedDateData {
+  account_id: string;
+  amount: number;
+  category: IArrayOfStrings;
+  merchant_name: any;
+  name: string;
+  pending: boolean;
+  transaction_code: string;
+  transaction_type: string;
+  payment_channel: string;
+  iso_currency_code: string;
+}
+
+
+export interface FormattedDate {
+  date: string;
+  // data: Array<FormattedDateData>;
+  data: Array<TransactionInterface>;
+}

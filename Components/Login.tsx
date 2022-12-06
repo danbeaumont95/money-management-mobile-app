@@ -44,7 +44,8 @@ const Login = ({ changeType, navigation }: any) => {
             });
           AsyncStorage.setItem('refresh_token', res.data.refresh_token).then((res) => {
             setShowLoadingSpinner(false);
-            navigation.navigate('PlaidLink', { name: 'Jane' });
+            navigation.navigate('LoggedInScreen', { name: 'Jane' });
+            // navigation.navigate('Main');
           })
             .catch((err) => {
               console.log(err, 'err saving refresh_token');

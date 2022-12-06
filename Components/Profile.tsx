@@ -8,7 +8,7 @@ const Profile = () => {
   return (
     <View>
       <Text style={{ borderColor: 'red', borderWidth: 6, height: 200 }}>Dann</Text>
-      <LoginModal setModalVisible={setModalVisible} isModalVisible={true} modalText={'Logged in!'} />
+      {/* <LoginModal setModalVisible={setModalVisible} isModalVisible={true} modalText={'Logged in!'} /> */}
     </View>
   );
 };
