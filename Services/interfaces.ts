@@ -56,3 +56,33 @@ export interface FormattedDate {
   // data: Array<FormattedDateData>;
   data: Array<TransactionInterface>;
 }
+
+export interface User {
+  _id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  mobileNumber: number;
+  password: string;
+  username: string;
+  images: string[];
+}
+
+
+export interface Balances {
+  available: number;
+  current: number;
+  iso_currency_code: string;
+  limit: number;
+  unofficial_currency_code?: any;
+}
+
+export interface LinkedAccount {
+  account_id: string;
+  balances: Balances;
+  mask: string;
+  name: string;
+  official_name?: any;
+  subtype: string;
+  type: string;
+}

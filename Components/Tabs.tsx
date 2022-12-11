@@ -7,6 +7,7 @@ import Profile from './Profile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Home from './Home';
 import Login from './Login';
+import LinkedAccounts from './LinkedAccounts';
 
 const Tab = createBottomTabNavigator();
 
@@ -37,6 +38,7 @@ function MyTabs() {
     <Tab.Navigator screenOptions={{ headerShown: false, tabBarStyle: { backgroundColor: '#1A1C46' } }} initialRouteName="Transactions" >
       <Tab.Screen name="Profile" component={Profile} options={{ tabBarActiveTintColor: '#FC0086' }} />
       <Tab.Screen name="Transactions" component={Main} options={{ tabBarActiveTintColor: '#FC0086' }} />
+      <Tab.Screen name="Linked Accounts" component={LinkedAccounts} options={{ tabBarActiveTintColor: '#FC0086' }} />
     </Tab.Navigator>
   );
 }

@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    top: '25%'
+    top: 140
   },
   title: {
     fontSize: 30,

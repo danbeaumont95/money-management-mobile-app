@@ -73,12 +73,47 @@ const getAllTransactions = async (token: string | null, time: string) => {
   return res;
 };
 
+const getMe = async (token: string | null) => {
+  const refreshToken = await AsyncStorage.getItem('refresh_token');
+
+  const checkIfTokenValid = await TokenService.refreshToken(token, refreshToken);
+  if (checkIfTokenValid.data?.access_token) {
+    token = checkIfTokenValid.data?.access_token;
+  }
+
+  const res = await axios.get(`${url}/user/getMe`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+};
+
+const getLinkedAccounts = async (token: string | null) => {
+  const refreshToken = await AsyncStorage.getItem('refresh_token');
+
+  const checkIfTokenValid = await TokenService.refreshToken(token, refreshToken);
+  if (checkIfTokenValid.data?.access_token) {
+    token = checkIfTokenValid.data?.access_token;
+  }
+
+  const res = await axios.get(`${url}/user/linkedAccounts`, {
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+  return res;
+
+};
+
 const UserService = {
   login,
   signUp,
   getLinkToken,
   exchangePublicTokenForAccesstoken,
-  getAllTransactions
+  getAllTransactions,
+  getMe,
+  getLinkedAccounts
 };
 
 
